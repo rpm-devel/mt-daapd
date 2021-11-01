@@ -1,0 +1,30 @@
+diff -u --recursive mt-daapd-0.2.4.2-vanilla/contrib/mt-daapd.conf mt-daapd-0.2.4.2/contrib/mt-daapd.conf
+--- mt-daapd-0.2.4.2-vanilla/contrib/mt-daapd.conf	2008-05-14 21:20:00.000000000 -0400
++++ mt-daapd-0.2.4.2/contrib/mt-daapd.conf	2008-05-14 21:25:59.000000000 -0400
+@@ -83,7 +83,7 @@
+ # as root or not.
+ #
+ 
+-runas	nobody
++runas	mt-daapd
+ 
+ #
+ # playlist (optional)
+@@ -122,7 +122,7 @@
+ #
+ #
+ 
+-extensions .mp3,.m4a,.m4p
++extensions .mp3,.m4a,.m4p,.ogg,.flac
+ 
+ #
+ # logfile (optional)
+@@ -136,7 +136,7 @@
+ # will vary the amount of logging you get.
+ #
+ 
+-#logfile /var/log/mt-daapd.log
++logfile /var/log/mt-daapd.log
+ 
+ #
+ # art_filename (optional)

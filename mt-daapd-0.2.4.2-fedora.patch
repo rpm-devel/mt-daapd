@@ -1,0 +1,44 @@
+diff -u --recursive mt-daapd-0.2.4.2-vanilla/contrib/mt-daapd mt-daapd-0.2.4.2/contrib/mt-daapd
+--- mt-daapd-0.2.4.2-vanilla/contrib/mt-daapd	2008-09-26 22:00:47.000000000 -0400
++++ mt-daapd-0.2.4.2/contrib/mt-daapd	2008-09-26 22:11:16.000000000 -0400
+@@ -1,6 +1,6 @@
+ #!/bin/bash
+ #
+-# chkconfig: 2345 85 15
++# chkconfig: - 98 15
+ # description: mt-daapd is a multi-threaded DAAP server for iTunes
+ # processname: mt-daapd
+ # pidfile: /var/run/mt-daapd
+@@ -10,25 +10,26 @@
+ . /etc/init.d/functions
+ [ -e /etc/daapd.conf ]
+ 
++mtdaapd=/usr/sbin/mt-daapd
++pidfile=/var/run/mt-daapd.pid
++lockfile=/var/lock/subsys/mt-daapd
+ RETVAL=0
+ 
+ start() {
+ 	echo -n $"Starting DAAP server: "
+-	daemon mt-daapd 
++	daemon --pidfile=${pidfile} $mtdaapd 
+ 	RETVAL=$?
+ 	echo
+-	[ $RETVAL -eq 0 ] && touch /var/lock/subsys/mt-daapd
++	[ $RETVAL -eq 0 ] && touch ${lockfile}
+ }
+ 
+ stop() {
+ 	echo -n $"Shutting down DAAP server: "
+-	# This is broken.
+-	killall -INT mt-daapd
+-#	killproc mt-daapd
++	killproc -p ${pidfile} $mtdaapd
+ 	RETVAL=$?
+ 
+ 	echo
+-	[ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/mt-daapd
++	[ $RETVAL -eq 0 ] && rm -f ${lockfile} ${pidfile}
+ }
+ 
+ case "$1" in
