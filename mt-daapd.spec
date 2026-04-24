@@ -6,9 +6,8 @@ Summary: An iTunes-compatible media server
 Name: mt-daapd
 Epoch: 1
 Version: 0.2.4.2
-Release: 26%{?dist}
+Release: 27%{?dist}
 License: GPLv2+
-Group: Applications/Multimedia
 Source0: http://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
 Source1: %{name}.service
 Patch0: mt-daapd-0.2.4.2-defaults.patch
@@ -37,7 +36,7 @@ devices.
 %patch1 -p1 -b .fedora
 
 %build
-%configure --enable-avahi --enable-oggvorbis --enable-sqlite3 --enable-flac --enable-mdns 
+%configure --enable-avahi --enable-oggvorbis --enable-sqlite3 --enable-flac --enable-mdns
 make %{?_smp_mflags}
 
 %install
@@ -57,8 +56,8 @@ getent passwd %{username} >/dev/null || \
 exit 0
 
 %post
-if [ $1 -eq 1 ] ; then 
-    # Initial installation 
+if [ $1 -eq 1 ] ; then
+    # Initial installation
     /bin/systemctl daemon-reload >/dev/null 2>&1 || :
 fi
 
@@ -96,6 +95,9 @@ fi
 %doc AUTHORS COPYING CREDITS NEWS README TODO
 
 %changelog
+* Thu Apr 24 2026 CasjaysDev <rpm-devel@casjaysdev.pro> - 1:0.2.4.2-27
+- Modernize spec for AlmaLinux 10: remove BuildRoot, %%clean, %%defattr, Group tag
+
 * Fri Jul 13 2018 Fedora Release Engineering <releng@fedoraproject.org> - 1:0.2.4.2-26
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_29_Mass_Rebuild
 
@@ -133,13 +135,13 @@ fi
 * Wed Apr 10 2013 Jon Ciesla <limburgher@gmail.com> - 1:0.2.4.2-15
 - Migrate from fedora-usermgmt to guideline scriptlets.
 
-* Thu Feb 14 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1:0.2.4.2-14
+* Thu Feb 14 2013 Fedora Release Engineering <releng@fedoraproject.org> - 1:0.2.4.2-14
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_19_Mass_Rebuild
 
-* Fri Jul 20 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1:0.2.4.2-13
+* Fri Jul 20 2012 Fedora Release Engineering <releng@fedoraproject.org> - 1:0.2.4.2-13
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_18_Mass_Rebuild
 
-* Fri Jan 13 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1:0.2.4.2-12
+* Fri Jan 13 2012 Fedora Release Engineering <releng@fedoraproject.org> - 1:0.2.4.2-12
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_17_Mass_Rebuild
 
 * Tue Sep 13 2011 Tom Callaway <spot@fedoraproject.org> - 1:0.2.4.2-11
@@ -151,7 +153,7 @@ fi
 * Thu Sep 08 2011 Tom Callaway <spot@fedoraproject.org> - 1:0.2.4.2-9
 - convert to systemd
 
-* Tue Feb 08 2011 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1:0.2.4.2-8
+* Tue Feb 08 2011 Fedora Release Engineering <releng@fedoraproject.org> - 1:0.2.4.2-8
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_15_Mass_Rebuild
 
 * Sat Oct  2 2010 Mark Chappell <tremble@fedoraproject.org> - 1:0.2.4.2-7
@@ -160,7 +162,7 @@ fi
 * Sat Jul 25 2009 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1:0.2.4.2-6
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_12_Mass_Rebuild
 
-* Wed Feb 25 2009 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1:0.2.4.2-5
+* Wed Feb 25 2009 Fedora Release Engineering <releng@fedoraproject.org> - 1:0.2.4.2-5
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_11_Mass_Rebuild
 
 * Sat Oct 18 2008 W. Michael Petullo <mike[at]flyn.org> - 0.2.4.2-4
@@ -195,7 +197,7 @@ fi
 
 * Sat Dec 15 2007 W. Michael Petullo <mike[at]flyn.org> - 0.2.4.1-3
    - Fix versions in changelog.
-   - Use %%config(noreplace) for config files.   
+   - Use %%config(noreplace) for config files.
    - Change group to Applications/Multimedia.
    - Don't chkconfig on.
    - Install mt-daapd.conf chmod 0640.
