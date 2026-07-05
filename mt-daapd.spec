@@ -7,22 +7,20 @@ Name: mt-daapd
 Epoch: 1
 Version: 0.2.4.2
 Release: 27%{?dist}
-License: GPLv2+
-Source0: http://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
+License: GPL-2.0-or-later
+URL: https://www.fireflymediaserver.org/
+ExclusiveArch: x86_64 aarch64
+Source0: https://downloads.sourceforge.net/project/%{name}/%{name}/%{version}/%{name}-%{version}.tar.gz
 Source1: %{name}.service
 Patch0: mt-daapd-0.2.4.2-defaults.patch
 Patch1: mt-daapd-0.2.4.2-fedora.patch
-Url: http://www.fireflymediaserver.org/
 BuildRequires:  gcc
 BuildRequires: gdbm-devel, avahi-devel, zlib-devel
 BuildRequires: flac-devel, libogg-devel, libvorbis-devel
 BuildRequires: libid3tag-devel, sqlite-devel
-BuildRequires: systemd-units
+BuildRequires: systemd-rpm-macros
 Requires(pre): shadow-utils
-Requires(post): systemd-sysv
-Requires(post): systemd-units
-Requires(preun): systemd-units
-Requires(postun): systemd-units
+%{?systemd_requires}
 
 %description
 The purpose of this project is built the best server software to serve
@@ -31,16 +29,14 @@ the widest variety of digital music content over the widest range of
 devices.
 
 %prep
-%setup -q
-%patch0 -p1 -b .defaults
-%patch1 -p1 -b .fedora
+%autosetup -p1
 
 %build
 %configure --enable-avahi --enable-oggvorbis --enable-sqlite3 --enable-flac --enable-mdns
-make %{?_smp_mflags}
+%make_build
 
 %install
-make DESTDIR=%{buildroot} install
+%make_install
 mkdir -p %{buildroot}%{_unitdir}
 mkdir -p %{buildroot}%{_localstatedir}/cache/mt-daapd
 mkdir -p %{buildroot}%{_localstatedir}/lib/mt-daapd
@@ -56,34 +52,13 @@ getent passwd %{username} >/dev/null || \
 exit 0
 
 %post
-if [ $1 -eq 1 ] ; then
-    # Initial installation
-    /bin/systemctl daemon-reload >/dev/null 2>&1 || :
-fi
+%systemd_post mt-daapd.service
 
 %preun
-if [ $1 -eq 0 ] ; then
-    # Package removal, not upgrade
-    /bin/systemctl --no-reload disable mt-daapd.service > /dev/null 2>&1 || :
-    /bin/systemctl stop mt-daapd.service > /dev/null 2>&1 || :
-fi
+%systemd_preun mt-daapd.service
 
 %postun
-/bin/systemctl daemon-reload >/dev/null 2>&1 || :
-if [ $1 -ge 1 ] ; then
-    # Package upgrade, not uninstall
-    /bin/systemctl try-restart mt-daapd.service >/dev/null 2>&1 || :
-fi
-
-%triggerun -- mt-daapd < 0.2.4.2-9
-# Save the current service runlevel info
-# User must manually run systemd-sysv-convert --apply mt-daapd
-# to migrate them to systemd targets
-/usr/bin/systemd-sysv-convert --save mt-daapd >/dev/null 2>&1 ||:
-
-# Run these because the SysV package being removed won't do them
-/sbin/chkconfig --del mt-daapd >/dev/null 2>&1 || :
-/bin/systemctl try-restart mt-daapd.service >/dev/null 2>&1 || :
+%systemd_postun_with_restart mt-daapd.service
 
 %files
 %config(noreplace) %{_sysconfdir}/mt-daapd.conf
@@ -92,9 +67,19 @@ fi
 %{_unitdir}/%{name}.service
 %attr(0700,mt-daapd,mt-daapd) %{_localstatedir}/cache/mt-daapd
 %attr(0700,mt-daapd,mt-daapd) %{_localstatedir}/lib/mt-daapd
-%doc AUTHORS COPYING CREDITS NEWS README TODO
+%license COPYING
+%doc AUTHORS CREDITS NEWS README TODO
 
 %changelog
+* Sat Jul 05 2026 CasjaysDev <rpm-devel@casjaysdev.pro> - 1:0.2.4.2-27
+- Source0: fix to long-form SourceForge URL with https (verified 302→200)
+- URL: http→https; %%autosetup -p1; drop %%triggerun SysV conversion block
+
+* Thu Jul 03 2026 CasjaysDev <rpm-devel@casjaysdev.pro> - 1:0.2.4.2-27
+- SPDX: GPLv2+ → GPL-2.0-or-later; add ExclusiveArch: x86_64 aarch64
+- systemd-rpm-macros + %%{?systemd_requires}; replace raw systemctl with macros
+- %%make_build, %%make_install, %%license COPYING
+
 * Thu Apr 24 2026 CasjaysDev <rpm-devel@casjaysdev.pro> - 1:0.2.4.2-27
 - Modernize spec for AlmaLinux 10: remove BuildRoot, %%clean, %%defattr, Group tag
 
