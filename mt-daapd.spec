@@ -2,6 +2,14 @@
 %global homedir %_var/lib/%username
 %global gecos mt-daapd
 
+%if 0%{?suse_version}
+%global sqlite_devel_pkg sqlite3-devel
+%global shadow_pkg shadow
+%else
+%global sqlite_devel_pkg sqlite-devel
+%global shadow_pkg shadow-utils
+%endif
+
 Summary: An iTunes-compatible media server
 Name: mt-daapd
 Epoch: 1
@@ -17,9 +25,9 @@ Patch1: mt-daapd-0.2.4.2-fedora.patch
 BuildRequires:  gcc
 BuildRequires: gdbm-devel, avahi-devel, zlib-devel
 BuildRequires: flac-devel, libogg-devel, libvorbis-devel
-BuildRequires: libid3tag-devel, sqlite-devel
+BuildRequires: libid3tag-devel, %{sqlite_devel_pkg}
 BuildRequires: systemd-rpm-macros
-Requires(pre): shadow-utils
+Requires(pre): %{shadow_pkg}
 %{?systemd_requires}
 
 %description
@@ -71,6 +79,14 @@ exit 0
 %doc AUTHORS CREDITS NEWS README TODO
 
 %changelog
+* Sat Jul 05 2026 CasjaysDev <rpm-devel@casjaysdev.pro> - 1:0.2.4.2-27
+- Multi-distro: guard sqlite-devel/sqlite3-devel and shadow-utils/shadow via
+  %%if 0%%{?suse_version} (openSUSE/SLES use sqlite3-devel and shadow); verified
+  gcc, gdbm-devel, avahi-devel, zlib-devel, flac-devel, libogg-devel,
+  libvorbis-devel, libid3tag-devel, systemd-rpm-macros are identically named
+  on openSUSE Tumbleweed (checked live repo index) so left unguarded
+- ExclusiveArch already x86_64 aarch64; no BuildArch: noarch present
+
 * Sat Jul 05 2026 CasjaysDev <rpm-devel@casjaysdev.pro> - 1:0.2.4.2-27
 - Source0: fix to long-form SourceForge URL with https (verified 302→200)
 - URL: http→https; %%autosetup -p1; drop %%triggerun SysV conversion block
